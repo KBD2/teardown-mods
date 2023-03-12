@@ -1,0 +1,4 @@
+name = DOOM BFG 9000
+author = KBD2
+description = The BFG 9000 from DOOM (2016). [noupload]
+tags = Global, Tool

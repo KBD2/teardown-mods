@@ -1,0 +1,4 @@
+name = DOOM Plasma Rifle
+author = KBD2
+description = The Plasma Rifle from DOOM (2016). Right click when charged for a heat blast. [noupload]
+tags = Global, Tool
