@@ -1,3 +1,18 @@
+#include "registry.lua"
+
+function destructibleRobots(shape, damage, hitcounter)
+	if HasTag(shape, "shapeHealth") then
+		if tonumber(GetTagValue(shape, "shapeHealth"))-damage < 0 and not HasTag(shape, "body") then 
+			RemoveTag(shape,"unbreakable")
+		end
+	end
+
+    SetFloat('level.destructible-bot.hitCounter', hitcounter)
+    SetInt('level.destructible-bot.hitShape', shape)
+    SetString('level.destructible-bot.weapon', "wolflgewehr")
+    SetFloat('level.destructible-bot.damage', damage)
+end
+
 function init()
     RegisterTool("doomplasmagun", "DOOM Plasma Rifle", "MOD/vox/rifle.vox", 3)
     SetBool("game.tool.doomplasmagun.enabled", true)
@@ -9,21 +24,23 @@ function init()
     TOOL_END_OFFSET = Vec(-0.16, 0.91, -1.4)
     TOOL_EXHAUST_OFFSET = Vec(-0.38, 0.8, -1.05)
 
-    COOLDOWN = 0.09
+    COOLDOWN = 0.08
 
-    PROJECTILE_SPEED = 25
-    PROJECTILE_SPREAD = 1.5
+    PROJECTILE_SPEED = 35
+    PROJECTILE_SPREAD = 0.8
 
     PROJECTILE_RADIUS = 0.2
     PROJECTILE_MAX_LIFE = 10
 
     PROJECTILE_FADE_LIFE = 1
-    PROJECTILE_FADE_INTENSITY = 0.2
+    PROJECTILE_FADE_INTENSITY = 0.3
 
     PROJECTILE_IMPULSE_SCALE = 10
     PROJECTILE_HOLE_RADIUS_WEAK = 1
     PROJECTILE_HOLE_RADIUS_MEDIUM = 0.8
     PROJECTILE_HOLE_RADIUS_STRONG = 0.4
+
+    PROJECTILE_PAINT_RADIUS = 1.2
 
     PROJECTILE_NUM_PLASMA = 6
     PROJECTILE_NUM_SMOKE = 5
@@ -43,6 +60,8 @@ function init()
     BLAST_RING_PARTICLE_RADIUS = 0.5
     BLAST_RING_FIRE_COOLDOWN = 1
 
+    registryInit()
+
     glob = {}
     glob.projectiles = {}
     glob.cooldown = 0
@@ -51,14 +70,23 @@ function init()
     glob.charge = 0
     glob.blastRingTimer = 0
     glob.blastFireCooldown = 0
+    glob.infiniteAmmo = GetBool("savegame.mod.infiniteammo")
+
+    if glob.infiniteAmmo then
+        SetString("game.tool.doomplasmagun.ammo.display", "")
+    end
 
     handleSoundFiring = LoadSound("MOD/sounds/firing0.ogg")
     handleSoundBlastReady = LoadSound("MOD/sounds/blastready.ogg")
     handleSoundBlast = LoadSound("MOD/sounds/blast0.ogg")
+
+    setAimDot = false
 end
 
 function tick(dt)
     if GetString("game.player.tool") == "doomplasmagun" and GetPlayerVehicle() == 0 then
+        SetBool("hud.aimdot", false)
+        setAimDot = false
         local toolFinalTrans = TOOL_BASE_TRANSFORM
 
         local toolTrans = GetBodyTransform(GetToolBody())
@@ -170,6 +198,10 @@ function tick(dt)
 
         glob.cooldown = math.max(0, glob.cooldown - dt)
     else
+		if not setAimDot then
+        	SetBool("hud.aimdot", true)
+			setAimDot = true
+		end
         glob.state = "READY"
         glob.cooldown = 0
         glob.animFrac = 0
@@ -252,6 +284,10 @@ function tickFlyingProjectiles(dt)
                     ))
                 end
 
+                Paint(projectile.pos, PROJECTILE_PAINT_RADIUS, "explosion")
+
+                destructibleRobots(shape, 10, 1)
+
                 MakeHole(
                     point, 
                     PROJECTILE_HOLE_RADIUS_WEAK, 
@@ -310,7 +346,9 @@ function fireWeapon(origin, direction)
     projectile.life = 0
     projectile.mode = "FLY"
     table.insert(glob.projectiles, projectile)
-    SetInt("game.tool.doomplasmagun.ammo", GetInt("game.tool.doomplasmagun.ammo") - 1)
+    if not glob.infiniteAmmo then
+        SetInt("game.tool.doomplasmagun.ammo", GetInt("game.tool.doomplasmagun.ammo") - 1)
+    end
 end
 
 function draw(dt)

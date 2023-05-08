@@ -1,3 +1,5 @@
+#include "registry.lua"
+
 function init()
     RegisterTool("doombfg", "DOOM BFG 9000", "MOD/vox/BFG.vox", 6)
     SetBool("game.tool.doombfg.enabled", true)
@@ -28,29 +30,43 @@ function init()
     LIGHTNING_THROW_RADIUS = 20
     LIGHTNING_THROW_POWER = 500
     LIGHTNING_DELETE_MASS_THRESHOLD = 300
+    LIGHTNING_PART_MAX_PARTICLES = 5
+    NUM_LAVA_ATTEMPTS = 100
 
     CHARGE_TIME = 0.75
     RECOIL_TIME = 0.35
     WAIT_TIME = 1
+
+    registryInit()
 
     glob = {}
     glob.cooldown = 0
     glob.state = "READY"
     glob.driveInitTrans = nil
     glob.driveAnimFrac = 0
+    glob.infiniteAmmo = GetBool("savegame.mod.infiniteammo")
+
+    if glob.infiniteAmmo then
+        SetString("game.tool.doombfg.ammo.display", "")
+    end
 
     projectiles = {}
 
     handleSpriteProjectile = LoadSprite("MOD/sprites/projectile.png")
+    handleSpriteHalo = LoadSprite("MOD/sprites/halo.png")
     handleSpriteCharge = LoadSprite("MOD/sprites/charge.png")
 
     handleSoundFiring = LoadSound("MOD/sounds/firing.ogg")
+
+    setAimDot = false
 end
 
 function tick(dt)
     if GetString("game.player.tool") == "doombfg"
         and GetPlayerVehicle() == 0
     then
+        SetBool("hud.aimdot", false)
+        setAimDot = false
         local playerTransform = GetPlayerCameraTransform()
         local toolTrans = GetBodyTransform(GetToolBody())
         local toolSetTrans = Transform(TOOL_BASE_OFFSET, QuatEuler(0, 0, 0))
@@ -118,6 +134,10 @@ function tick(dt)
         end
 
     else
+		if not setAimDot then
+        	SetBool("hud.aimdot", true)
+			setAimDot = true
+		end
         glob.state = "WAIT"
     end
 
@@ -145,12 +165,21 @@ function tickProjectiles(dt)
             local lightning = projectile.lightning[i]
             drawLightning(projectile.pos, lightning.goal)
             local fraction = lightning.life / LIGHTNING_MAX_LIFE
+            local holeSize = LIGHTNING_HOLE_RADIUS * fraction
             local edge = VecScale(VecNormalize(Vec(randBetween(-1, 1), randBetween(-1, 1), randBetween(-1, 1))), LIGHTNING_HOLE_RADIUS * lightning.life)
             local hit, point = QueryClosestPoint(VecAdd(lightning.goal, edge), LIGHTNING_HOLE_RADIUS)
             if hit then
                 particleLava()
-                for i = 1, math.max(1, LAVA_PER_LIGHTNING * (dt / LIGHTNING_MAX_LIFE)) do
-                    SpawnParticle(point, randVec(-0.2, 0.2), randBetween(1, 2))
+                local vec = VecScale(Vec(1, 1, 1), holeSize)
+                local shapes = QueryAabbShapes(VecSub(point, vec), VecAdd(point, vec))
+                for j = 1, NUM_LAVA_ATTEMPTS do
+                    local testPoint = VecAdd(point, randVec(-holeSize, holeSize))
+                    for k = 1, #shapes do
+                        local typ = GetShapeMaterialAtPosition(shapes[k], testPoint)
+                        if typ ~= "" and typ ~= "heavymetal" and typ ~= "rock" and typ ~= "none" then
+                            SpawnParticle(testPoint, randVec(-0.2, 0.2), randBetween(1, 2))
+                        end
+                    end
                 end
             end
             PointLight(lightning.goal, PROJ_R, PROJ_G, PROJ_B, 3)
@@ -158,12 +187,13 @@ function tickProjectiles(dt)
             lightning.holeTime = lightning.holeTime + dt
             if lightning.holeTime > LIGHTNING_MAX_LIFE / 5 then
                 lightning.holeTime = 0
-                local holeSize = LIGHTNING_HOLE_RADIUS * fraction
+                
                 MakeHole(lightning.goal, holeSize, holeSize, holeSize)
             end
             if lightning.life > LIGHTNING_MAX_LIFE then
                 throwBodies(lightning.goal)
                 PointLight(lightning.goal, PROJ_R, PROJ_G, PROJ_B, 10)
+                Explosion(lightning.goal, 0.25)
                 table.remove(projectile.lightning, i)
             end
         end
@@ -183,6 +213,13 @@ function tickProjectiles(dt)
             Transform(projectile.pos, GetPlayerCameraTransform().rot), 
             PROJECTILE_RADIUS * 2, PROJECTILE_RADIUS * 2,
             1, 1, 1, 1, true
+        )
+
+        DrawSprite(
+            handleSpriteHalo,
+            Transform(projectile.pos, GetPlayerCameraTransform().rot), 
+            PROJECTILE_RADIUS * 2.8, PROJECTILE_RADIUS * 2.8,
+            1, 1, 1, 0.1, true
         )
 
         particleProjectileSpark()
@@ -253,6 +290,8 @@ function createLightning(projectile)
 end
 
 function drawLightning(origin, goal)
+    particleLightning()
+
     local direction = VecNormalize(VecSub(goal, origin))
     origin = VecAdd(origin, VecScale(direction, PROJECTILE_RADIUS))
     local dist = math.abs(VecLength(VecSub(goal, origin)))
@@ -261,9 +300,19 @@ function drawLightning(origin, goal)
     local start = origin
     local startActual = origin
     for i = 1, numParts do
-        local point = VecAdd(startActual, VecScale(direction, LIGHTNING_PART_LENGTH))
-        point = QuatRotateVec(QuatEuler(randBetween(-0.5, 0.5), randBetween(-0.5, 0.5), randBetween(-0.5, 0.5)), point)
+        local vec = VecScale(direction, LIGHTNING_PART_LENGTH)
+        vec = QuatRotateVec(randQuat(-15, 15), vec)
+        point = VecAdd(startActual, vec)
         DrawLine(start, point, LIGH_R, LIGH_G, LIGH_B)
+        local particleVec = VecScale(VecSub(point, start), 1 / LIGHTNING_PART_MAX_PARTICLES * 0.79)
+        for j = 1, LIGHTNING_PART_MAX_PARTICLES + 1 do
+            local particleStart = VecAdd(start, VecScale(particleVec, j - 1))
+            SpawnParticle(
+                particleStart,
+                VecScale(particleVec, 1 / GetTimeStep()),
+                1.5 * GetTimeStep()
+            )
+        end
         start = point
         startActual = VecAdd(startActual, VecScale(direction, LIGHTNING_PART_LENGTH))
     end
@@ -280,7 +329,9 @@ function fireWeapon(origin, orientation)
 
     table.insert(projectiles, projectile)
 
-    SetInt("game.tool.doombfg.ammo", GetInt("game.tool.doombfg.ammo") - 1)
+    if not glob.infiniteAmmo then
+        SetInt("game.tool.doombfg.ammo", GetInt("game.tool.doombfg.ammo") - 1)
+    end
 end
 
 function animateDrive(dt)
@@ -352,6 +403,10 @@ function randVec(min, max)
     return Vec(randBetween(min, max), randBetween(min, max), randBetween(min, max))
 end
 
+function randQuat(min, max)
+    return QuatEuler(randBetween(min, max), randBetween(min, max), randBetween(min, max))
+end
+
 function particleLava()
     ParticleReset()
     ParticleTile(6)
@@ -397,6 +452,21 @@ function particleGunSmoke()
     ParticleCollide(0)
     ParticleColor(PROJ_R, PROJ_G, PROJ_B)
     ParticleGravity(0.5)
+end
+
+function particleLightning()
+    ParticleReset()
+    ParticleTile(4)
+    ParticleRadius(0.05)
+    ParticleType("plain")
+    ParticleCollide(0)
+    ParticleGravity(0)
+    ParticleRotation(0)
+    ParticleSticky(0)
+    ParticleAlpha(1)
+    ParticleEmissive(5)
+    ParticleColor(PROJ_R, PROJ_G, PROJ_B)
+    ParticleStretch(2.6)
 end
 
 function canGetShapes()

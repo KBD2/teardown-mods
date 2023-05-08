@@ -1,5 +1,7 @@
 -- My first proper mod! :D
 
+#include "registry.lua"
+
 function init()
 	RegisterTool("doomrocket", "DOOM Rocket Launcher", "MOD/vox/Launcher.vox", 4)
 	SetBool("game.tool.doomrocket.enabled", true)
@@ -16,6 +18,14 @@ function init()
 
 	breechCover1InitialPos = nil
 	breechCover2InitialPos = nil
+
+	setAimDot = false
+
+	infiniteAmmo = GetBool("savegame.mod.infiniteammo")
+
+	if infiniteAmmo then
+        SetString("game.tool.doomrocket.ammo.display", "")
+    end
 end
 
 function tick(dt)
@@ -28,6 +38,8 @@ function tick(dt)
 		end
 	end
 	if GetString("game.player.tool") == "doomrocket" and GetPlayerVehicle() == 0 and GetPlayerGrabShape() == 0 and GetBool("game.player.canusetool") and GetInt("game.tool.doomrocket.ammo") > 0 then
+        SetBool("hud.aimdot", false)
+		setAimDot = false
 		if InputPressed("lmb") and firingCooldown <= 0 then
 			local playerTransform = GetPlayerCameraTransform()
 			local forwards = TransformToParentVec(playerTransform, Vec(0, 0, -1))
@@ -60,7 +72,9 @@ function tick(dt)
 			firingCooldown = 1.2
 
 			PlaySound(firingSoundHandle)
-			SetInt("game.tool.doomrocket.ammo", GetInt("game.tool.doomrocket.ammo") - 1)
+			if not infiniteAmmo then
+				SetInt("game.tool.doomrocket.ammo", GetInt("game.tool.doomrocket.ammo") - 1)
+			end
 
 		end
 		if InputPressed("rmb") then
@@ -105,6 +119,10 @@ function tick(dt)
 
 		SetToolTransform(Transform(offset, QuatAxisAngle(Vec(0, 1, 0), 2)), 1.0)
 	else
+		if not setAimDot then
+        	SetBool("hud.aimdot", true)
+			setAimDot = true
+		end
 		firingAnimation = 0
 	end
 

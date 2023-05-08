@@ -1,0 +1,48 @@
+LASERGEWEHR_PREFAB = [[
+<prefab version="1.3.0">
+	<group name="Lasergewehr" pos="1.0 3.4 -0.5" rot="0.0 180.0 0.0">
+		<vox pos="-0.8 -0.05 -1.945" file="MOD/vox/Lasergewehr.vox" object="main" scale="0.5"/>
+		<group name="Shaft" pos="-0.729 0.546 -1.83" rot="0.0 -180.0 0.0">
+			<vox pos="-0.081 -0.026 -0.109" rot="0.0 -9.0 0.0" file="MOD/vox/Lasergewehr.vox" object="cone1" scale="0.5"/>
+			<vox pos="0.004 -0.055 -0.105" rot="6.0 6.0 0.6" file="MOD/vox/Lasergewehr.vox" object="cone8" scale="0.5"/>
+			<vox pos="-0.024 -0.076 -0.105" rot="9.0 0.0 0.0" file="MOD/vox/Lasergewehr.vox" object="cone7" scale="0.5"/>
+			<vox pos="-0.059 -0.057 -0.108" rot="6.0 -6.0 -0.6" file="MOD/vox/Lasergewehr.vox" object="cone6" scale="0.5"/>
+			<vox pos="-0.059 0.004 -0.103" rot="-6.0 -6.0 0.6" file="MOD/vox/Lasergewehr.vox" object="cone5" scale="0.5"/>
+			<vox pos="0.024 -0.026 -0.099" rot="0.0 9.0 0.0" file="MOD/vox/Lasergewehr.vox" object="cone4" scale="0.5"/>
+			<vox pos="-0.026 0.028 -0.1" rot="-9.0 0.0 0.0" file="MOD/vox/Lasergewehr.vox" object="cone3" scale="0.5"/>
+			<vox pos="0.002 0.004 -0.1" rot="-6.0 6.0 -0.6" file="MOD/vox/Lasergewehr.vox" object="cone2" scale="0.5"/>
+			<vox pos="0.01 -0.032 -0.299" rot="0.0 0.0 45.0" file="MOD/vox/Lasergewehr.vox" object="rod1" scale="0.5"/>
+			<vox pos="0.0 -0.043 -0.299" rot="0.0 0.0 45.0" file="MOD/vox/Lasergewehr.vox" object="rod2" scale="0.5"/>
+			<vox pos="-0.035 0.013 -0.299" rot="0.0 0.0 -45.0" file="MOD/vox/Lasergewehr.vox" object="rod3" scale="0.5"/>
+			<vox pos="-0.045 0.002 -0.299" rot="0.0 0.0 -45.0" file="MOD/vox/Lasergewehr.vox" object="rod4" scale="0.5"/>
+			<vox pos="-0.001 -0.085 -0.11" rot="12.6 -8.9 44.3" file="MOD/vox/Lasergewehr.vox" object="cone9" scale="0.5"/>
+			<vox pos="0.014 0.0 -0.1" rot="0.0 9.0 -45.0" file="MOD/vox/Lasergewehr.vox" object="cone10" scale="0.5"/>
+			<vox pos="-0.001 0.015 -0.1" rot="-12.6 8.9 44.3" file="MOD/vox/Lasergewehr.vox" object="cone11" scale="0.5"/>
+			<vox pos="-0.056 -0.035 -0.105" rot="0.0 -9.0 45.0" file="MOD/vox/Lasergewehr.vox" object="cone12" scale="0.5"/>
+		</group>
+		<location name="barrelend" pos="-0.725 0.425 -3.1"/>
+		<location name="shaftlight" pos="-0.725 0.6 -1.775"/>
+		<location name="lightning" pos="-0.725 0.575 -1.725"/>
+	</group>
+</prefab>
+]]
+
+LASERGEWEHR_OBJECTS = {
+    {"rod1", Vec(1, 2, 1)},
+    {"rod2", Vec(1, 2, 1)},
+    {"rod3", Vec(1, 2, 1)},
+    {"rod4", Vec(1, 2, 1)},
+    {"cone12", Vec(1, 5, 1)},
+    {"cone11", Vec(1, 5, 1)},
+    {"cone10", Vec(1, 5, 1)},
+    {"cone9", Vec(1, 5, 1)},
+    {"cone8", Vec(1, 5, 1)},
+    {"cone7", Vec(1, 5, 1)},
+    {"cone6", Vec(1, 5, 1)},
+    {"cone5", Vec(1, 5, 1)},
+    {"cone4", Vec(1, 5, 1)},
+    {"cone3", Vec(1, 5, 1)},
+    {"cone2", Vec(1, 5, 1)},
+    {"cone1", Vec(1, 5, 1)},
+    {"main", Vec(27, 47, 16)},
+}

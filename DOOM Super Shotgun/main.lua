@@ -1,3 +1,7 @@
+#include "registry.lua"
+
+local infiniteAmmo = GetBool("savegame.mod.doombigshotty.infiniteammo")
+
 function init()
     RegisterTool("doombigshotty", "DOOM Super Shotgun", "MOD/vox/SuperShotgun_shortened.vox", 3)
     SetBool("game.tool.doombigshotty.enabled", true)
@@ -26,13 +30,23 @@ function init()
 
     manualFov = 90
 
+    registryInit()
+
     disableRecoil = GetBool("savegame.mod.doombigshotty.disablerecoil")
+
+    if infiniteAmmo then
+        SetString("game.tool.doombigshotty.ammo.display", "")
+    end
+
+    setAimDot = false
 
 end
 
 function tick(dt)
     SetShapeCollisionFilter(barrelShape, 0, 0)
     if GetString("game.player.tool") == "doombigshotty" and GetPlayerVehicle() == 0 and GetPlayerGrabShape() == 0 and GetBool("game.player.canusetool") then
+        SetBool("hud.aimdot", false)
+        setAimDot = false
         if barrelShape == 0 then
             findBarrel()
         end
@@ -100,7 +114,9 @@ function tick(dt)
                     SetPlayerVelocity(VecAdd(GetPlayerVelocity(), VecScale(firingDirection, -7)))
                 end
 
-                SetInt("game.tool.doombigshotty.ammo", GetInt("game.tool.doombigshotty.ammo") - 2)
+                if not infiniteAmmo then
+                    SetInt("game.tool.doombigshotty.ammo", GetInt("game.tool.doombigshotty.ammo") - 2)
+                end
 
             end
             
@@ -165,6 +181,10 @@ function tick(dt)
         end
 
     else
+		if not setAimDot then
+        	SetBool("hud.aimdot", true)
+			setAimDot = true
+		end
         firing = false
         triggerPullTime = 0
         recoilTime = 0

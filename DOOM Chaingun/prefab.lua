@@ -1,0 +1,64 @@
+CHAINGUN_PREFAB = [[
+<prefab version="1.3.0">
+	<group name="Chaingun" pos="-0.5 2.575 -0.65">
+		<vox pos="0.0 -0.575 1.05" file="MOD/vox/Chaingun.vox" object="main" scale="0.5"/>
+		<group name="front" pos="0.025 0.275 0.45">
+			<group name="right" pos="0.025 -0.1 -0.15">
+				<vox pos="0.1 0.05 0.1" rot="0.0 0.0 -10.0" file="MOD/vox/Chaingun.vox" object="plateright" scale="0.5"/>
+				<group name="rightbarrel" pos="0.15 0.175 0.0">
+					<vox pos="0.0 -0.15 -0.9" file="MOD/vox/Chaingun.vox" object="barrelright" scale="0.5"/>
+					<vox pos="0.0 -0.15 -0.9" file="MOD/vox/Chaingun.vox" object="barrelrighthot" scale="0.5"/>
+				</group>
+				<location name="rightbarrelend" pos="0.125 0.3 -1.85" rot="0.0 0.0 0.0"/>
+			</group>
+			<group name="left" pos="0.025 -0.1 -0.15">
+				<vox pos="-0.025 0.225 0.1" rot="180.0 180.0 80.0" file="MOD/vox/Chaingun.vox" object="plateleft" scale="0.5"/>
+				<group name="leftbarrel" pos="-0.2 0.175 0.0">
+					<vox pos="0.0 -0.15 -0.9" file="MOD/vox/Chaingun.vox" object="barrelleft" scale="0.5"/>
+					<vox pos="0.0 -0.15 -0.9" file="MOD/vox/Chaingun.vox" object="barrellefthot" scale="0.5"/>
+				</group>
+				<location name="leftbarrelend" pos="-0.175 0.3 -1.85" rot="0.0 0.0 0.0"/>
+			</group>
+			<group name="bottom" pos="0.025 -0.05 -0.1">
+				<vox pos="-0.125 0.0 0.05" rot="180.0 180.0 -45.0" file="MOD/vox/Chaingun.vox" object="platebottom" scale="0.5"/>
+				<group name="bottombarrel" pos="-0.025 -0.15 -0.05">
+					<vox pos="0.0 -0.15 -0.9" file="MOD/vox/Chaingun.vox" object="barrelbottom" scale="0.5"/>
+					<vox pos="0.0 -0.15 -0.9" file="MOD/vox/Chaingun.vox" object="barrelbottomhot" scale="0.5"/>
+				</group>
+				<location name="bottombarrelend" pos="-0.025 0.0 -1.9" rot="0.0 0.0 0.0"/>
+			</group>
+		</group>
+		<location name="mainbarrelend" pos="0.025 0.275 -1.55" rot="0.0 0.0 0.0"/>
+		<group name="handleside" pos="-0.475 0.275 0.4">
+			<vox pos="-0.175 0.0 -0.025" file="MOD/vox/Chaingun.vox" object="handleside" scale="0.5"/>
+		</group>
+		<group name="handle" pos="0.0 0.5 1.925">
+			<vox pos="0.0 0.075 0.05" rot="30.0 0.0 0.0" file="MOD/vox/Chaingun.vox" object="handle" scale="0.5"/>
+		</group>
+		<group name="ammofeedright" pos="0.3 0.3 0.0">
+			<vox pos="0.0 -0.025 0.65" file="MOD/vox/Chaingun.vox" object="ammofeedright" scale="0.5"/>
+		</group>
+		<group name="ammofeedleft" pos="-0.3 0.3 0.0">
+			<vox pos="0.0 -0.025 0.65" file="MOD/vox/Chaingun.vox" object="ammofeedleft" scale="0.5"/>
+		</group>
+		<location name="cooldownsmoke" pos="0.0 0.225 0.225"/>
+	</group>
+</prefab>
+]]
+
+CHAINGUN_OBJECTS = {
+    {"barrellefthot", Vec(6, 37, 6)},
+    {"barrelrighthot", Vec(6, 37, 6)},
+    {"barrelbottomhot", Vec(6, 37, 6)},
+    {"plateleft", Vec(6, 3, 6)},
+    {"plateright", Vec(6, 3, 6)},
+    {"platebottom", Vec(6, 3, 6)},
+    {"barrelleft", Vec(6, 37, 6)},
+    {"barrelright", Vec(6, 37, 6)},
+    {"handleside", Vec(8, 5, 3)},
+    {"ammofeedleft", Vec(9, 6, 5)},
+    {"ammofeedright", Vec(9, 6, 5)},
+    {"main", Vec(23, 42, 24)},
+    {"handle", Vec(1, 9, 4)},
+    {"barrelbottom", Vec(6, 37, 6)}
+}

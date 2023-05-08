@@ -1,0 +1,4 @@
+name = Wolfenstein Lasergewehr
+author = KBD2
+description = The Lasergewehr from Wolfenstein: The New Colossus. Burns holes through whatever it can't melt outright. [noupload]
+tags= Global, Tool

@@ -1,0 +1,4 @@
+name = DOOM Chaingun
+author = KBD2
+description = The Chaingun from DOOM (2016). Hold right click to transform into a mobile turret. Press C to swap to incendiary ammo. [noupload]
+tags = Global, Tool
