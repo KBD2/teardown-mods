@@ -1,0 +1,4 @@
+name = DOOM Super Shotgun
+author = KBD2
+description = The Super Shotgun from DOOM (2016). [noupload]
+tags = Global, Tool

@@ -1,0 +1,4 @@
+name = DOOM Chainsaw
+author = KBD2
+description = The Chainsaw from DOOM (2016). Hold RMB and move your mouse to change the blade angle. [noupload]
+tags = Global, Tool

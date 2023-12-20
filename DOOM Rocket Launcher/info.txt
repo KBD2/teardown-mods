@@ -1,0 +1,4 @@
+name = DOOM Rocket Launcher
+author = KBD2
+description = The rocket launcher from DOOM (2016). Right-click to detonate the rocket in flight, with a more powerful explosion. [noupload]
+tags= Global, Tool
